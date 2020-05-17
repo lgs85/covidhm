@@ -102,14 +102,14 @@ inf_prob <- function(day = NULL, inc_samp = NULL, theta = NULL, R = NULL, contac
 
   if(sum(presym) > 0)
   {
-    presym_inds <- dsn(x = day[presym],
+    presym_inds <- sn::dsn(x = day[presym],
                            xi = inc_samp[presym],
                            omega = (inc_samp[presym]/max(inc_samp[presym]))*3,
                            alpha = -Inf)
   }
   if(sum(!presym) > 0)
   {
-    postsym_inds <- dsn(x = day[!presym],
+    postsym_inds <- sn::dsn(x = day[!presym],
                             xi = inc_samp[!presym],
                             omega = 2,
                             alpha = Inf)
@@ -122,7 +122,7 @@ inf_prob <- function(day = NULL, inc_samp = NULL, theta = NULL, R = NULL, contac
   out[presym] <- presym_inds
   out[!presym] <- postsym_inds
 
-  out2 <- 1 - exp(1)^(-(out*R*contactrate))
+  out2 <- 1 - exp(1)^(-(out*R*contactrate*infasym))
 
   return(out2)
 }
