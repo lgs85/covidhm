@@ -30,11 +30,11 @@ plot_network2 <- purrr::partial(plot_network,
                                 delay_scale = 1.4,
                                 prop.ascertain = 0.8,
                                 presymrate = 0.4,
-                                R = 6.5,
+                                R = 1,
                                 outside = 0.001,
                                 sensitivity = "high",
                                 testing = "none",
-                                s = 333)
+                                s = 332)
 
 pdf("inst/plots/Figure_1.pdf",
     width = 8,
@@ -165,8 +165,9 @@ dev.off()
 # Figure 2 - intervention scenarios ---------------------------------------
 
 sce_figa <- sce  %>%
+  mutate(intervention = recode(intervention, Nothing = "No control")) %>%
   mutate(intervention = factor(intervention,
-                               levels = c("Nothing",
+                               levels = c("No control",
                                           "Case isolation",
                                           "Primary tracing",
                                           "Secondary tracing"))) %>%
@@ -183,11 +184,11 @@ plot_network2 <- purrr::partial(plot_network,
                                 delay_scale = 1.4,
                                 prop.ascertain = 0.8,
                                 presymrate = 0.4,
-                                R = 6.5,
+                                R = 1,
                                 outside = 0.001,
                                 sensitivity = "high",
                                 testing = "none",
-                                s = 333)
+                                s = 332)
 
 sce_figb <- function(){
 
@@ -251,8 +252,9 @@ net_figa <- net  %>%
                           degcont = "Degree null",
                           rand = "Edge null",
                           cluster = "Cluster null")) %>%
+  mutate(intervention = recode(intervention, Nothing = "No control")) %>%
   mutate(intervention = factor(intervention,
-                               levels = c("Nothing",
+                               levels = c("No control",
                                           "Case isolation",
                                           "Primary tracing",
                                           "Secondary tracing")),
@@ -265,21 +267,21 @@ net_figa <- net  %>%
 
 
 plot_network2 <- purrr::partial(plot_network,
-                                day = 69,
+                                day = 20,
                                 num.initial.cases = 1,
                                 prop.asym = 0.4,
                                 delay_shape =  1,
                                 delay_scale = 1.4,
                                 prop.ascertain = 0.8,
                                 presymrate = 0.4,
-                                R = 6.5,
+                                R = 1,
                                 outside = 0.001,
                                 sensitivity = "high",
                                 testing = "none",
-                                isolation = FALSE,
-                                quarantine = FALSE,
-                                tracing = FALSE,
-                                secondary = FALSE,
+                                isolation = TRUE,
+                                quarantine = TRUE,
+                                tracing = TRUE,
+                                secondary = TRUE,
                                 s = 333)
 
 net_exa <- function(){
@@ -352,25 +354,26 @@ dev.off()
 # Figure 5 - distancing and testing ---------------------------------------
 
 dis_figa <- dis  %>%
+  mutate(intervention = recode(intervention, Nothing = "No control")) %>%
   case_plot(facet = "grid", gridvar = "distancing", testing = TRUE)+
   theme(legend.position = "top")
 
 plot_network2 <- purrr::partial(plot_network,
-                                day = 69,
+                                day = 20,
                                 num.initial.cases = 1,
                                 prop.asym = 0.4,
                                 delay_shape =  1,
                                 delay_scale = 1.4,
                                 prop.ascertain = 0.8,
                                 presymrate = 0.4,
-                                R = 6.5,
+                                R = 1,
                                 outside = 0.001,
                                 sensitivity = "high",
                                 testing = "none",
-                                isolation = FALSE,
-                                quarantine = FALSE,
-                                tracing = FALSE,
-                                secondary = FALSE,
+                                isolation = TRUE,
+                                quarantine = TRUE,
+                                tracing = TRUE,
+                                secondary = TRUE,
                                 s = 333)
 
 net_exa <- function(){

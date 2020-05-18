@@ -21,7 +21,7 @@
 #' \dontrun{
 #' outbreak_model(net = haslemere, num.initial.cases = 1, prop.ascertain = 0.8, cap_max_days = 69, R = 6.5, presymrate = 0.4,
 #' delay_shape = 1,delay_scale = 1.4,prop.asym = 0.4, quarantine = TRUE, isolation = TRUE, tracing = TRUE, secondary = TRUE,
-#' outside = 0.001, sensitivity = "high", testing = "none"}
+#' outside = 0.001, sensitivity = "high", testing = "none")}
 #'
 #'
 outbreak_model <- function(net = haslemere,

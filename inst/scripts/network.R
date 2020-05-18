@@ -28,7 +28,7 @@ future::plan("multiprocess")
 
 scenario_sim2 <- partial(scenario_sim, n.sim = 1, num.initial.cases = 1, prop.asym=0.4,
                          prop.ascertain = 0.8, cap_max_days = 69,
-                         delay_shape = 1, delay_scale = 1.4,R = 6.5,presymrate = 0.4,
+                         delay_shape = 1, delay_scale = 1.4,R = 1,presymrate = 0.4,
                          outside = 0.001, sensitivity = "high", testing = "none",cap_max_tests = Inf)
 
 

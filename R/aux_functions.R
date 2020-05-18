@@ -775,5 +775,10 @@ plot_network_app <- function(
 
 
 
+#' Export haslemere
+#'
+#' @docType data
+#' @export haslemere
+#'
 
-
+NULL
