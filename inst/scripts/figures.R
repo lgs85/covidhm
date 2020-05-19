@@ -442,13 +442,13 @@ dev.off()
 
 
 
-# Figure S5 - proportion asymptomatic -------------------------------------
 
+# Figure S5 - proportion asymptomaticR0
 
 filtered <- sen %>%
   filter(delay == "Short",
          presymrate == 0.4,
-         R == 6.5,
+         prop.asym == 0.4,
          num.initial.cases == 1,
          sensitivity == "high")
 
@@ -460,9 +460,72 @@ names(ll) <- filtered$scenarioID
 
 dd <- bind_rows(ll, .id = "scenarioID") %>%
   mutate(scenarioID = as.numeric(scenarioID)) %>%
-  left_join(select(filtered,scenarioID,control_effectiveness,prop.asym,scenario),by = "scenarioID")
+  left_join(select(filtered,scenarioID,control_effectiveness,R,scenario),by = "scenarioID") %>%
+  mutate(control_effectiveness = recode(control_effectiveness,
+                                        `0.4` = "40% traced",
+                                        `0.6` = "60% traced",
+                                        `0.8` = "80% traced"),
+         scenario = recode(scenario,
+                           primary_quarantine = "Primary tracing",
+                           secondary_quarantine = "Secondary quarantine"))
+r_figa <- dd %>%
+  rename(intervention = scenario) %>%
+  filter(R == 1) %>%
+  case_plot(facet = "grid",gridvar = "control_effectiveness")
+
+legend <- get_legend(r_figa)
+r_figa <- r_figa +
+  theme(legend.position = "none")+
+  ggtitle("R = 2.8")
+
+r_figb <- dd %>%
+  rename(intervention = scenario) %>%
+  filter(R == 2) %>%
+  case_plot(facet = "grid",gridvar = "control_effectiveness")+
+  theme(legend.position = "none")+
+  ggtitle("R = 3.5")
 
 
+r_fig <- plot_grid(r_figa,r_figb, legend,rel_widths = c(1,1,0.5),nrow = 1)
+
+
+#Write to pdf
+pdf("inst/plots/Figure_S5.pdf",
+    width = 12,
+    height = 5)
+
+r_fig
+dev.off()
+
+
+
+
+# Figure S5 - proportion asymptomatic -------------------------------------
+
+
+filtered <- sen %>%
+  filter(delay == "Short",
+         presymrate == 0.4,
+         R == 1,
+         num.initial.cases == 1,
+         sensitivity == "high")
+
+ll <- filtered %>%
+  group_by(scenarioID) %>%
+  pull(sims[[1]])
+
+names(ll) <- filtered$scenarioID
+
+dd <- bind_rows(ll, .id = "scenarioID") %>%
+  mutate(scenarioID = as.numeric(scenarioID)) %>%
+  left_join(select(filtered,scenarioID,control_effectiveness,prop.asym,scenario),by = "scenarioID") %>%
+  mutate(control_effectiveness = recode(control_effectiveness,
+                                        `0.4` = "40% traced",
+                                        `0.6` = "60% traced",
+                                        `0.8` = "80% traced"),
+         scenario = recode(scenario,
+                           primary_quarantine = "Primary tracing",
+                           secondary_quarantine = "Secondary quarantine"))
 asym_figa <- dd %>%
   rename(intervention = scenario) %>%
   filter(prop.asym == 0.2) %>%
@@ -499,7 +562,7 @@ dev.off()
 filtered <- sen %>%
   filter(delay == "Short",
          prop.asym == 0.4,
-         R == 6.5,
+         R == 1,
          num.initial.cases == 1,
          sensitivity == "high")
 
@@ -511,7 +574,14 @@ names(ll) <- filtered$scenarioID
 
 dd <- bind_rows(ll, .id = "scenarioID") %>%
   mutate(scenarioID = as.numeric(scenarioID)) %>%
-  left_join(select(filtered,scenarioID,control_effectiveness,presymrate,scenario),by = "scenarioID")
+  left_join(select(filtered,scenarioID,control_effectiveness,presymrate,scenario),by = "scenarioID") %>%
+  mutate(control_effectiveness = recode(control_effectiveness,
+                                        `0.4` = "40% traced",
+                                        `0.6` = "60% traced",
+                                        `0.8` = "80% traced"),
+         scenario = recode(scenario,
+                           primary_quarantine = "Primary tracing",
+                           secondary_quarantine = "Secondary quarantine"))
 
 theta_figa <- dd %>%
   rename(intervention = scenario) %>%
@@ -549,7 +619,7 @@ dev.off()
 filtered <- sen %>%
   filter(presymrate == 0.4,
          prop.asym == 0.4,
-         R == 6.5,
+         R == 1,
          num.initial.cases == 1,
          sensitivity == "high")
 
@@ -561,7 +631,14 @@ names(ll) <- filtered$scenarioID
 
 dd <- bind_rows(ll, .id = "scenarioID") %>%
   mutate(scenarioID = as.numeric(scenarioID)) %>%
-  left_join(select(filtered,scenarioID,control_effectiveness,delay,scenario),by = "scenarioID")
+  left_join(select(filtered,scenarioID,control_effectiveness,delay,scenario),by = "scenarioID") %>%
+  mutate(control_effectiveness = recode(control_effectiveness,
+                                        `0.4` = "40% traced",
+                                        `0.6` = "60% traced",
+                                        `0.8` = "80% traced"),
+         scenario = recode(scenario,
+                           primary_quarantine = "Primary tracing",
+                           secondary_quarantine = "Secondary quarantine"))
 
 
 delay_figa <- dd %>%
@@ -602,7 +679,7 @@ filtered <- sen %>%
   filter(delay == "Short",
          presymrate == 0.4,
          prop.asym == 0.4,
-         R == 6.5,
+         R == 1,
          sensitivity == "high")
 
 ll <- filtered %>%
@@ -613,7 +690,14 @@ names(ll) <- filtered$scenarioID
 
 dd <- bind_rows(ll,.id = "scenarioID") %>%
   mutate(scenarioID = as.numeric(scenarioID)) %>%
-  left_join(select(filtered,scenarioID,control_effectiveness,num.initial.cases,scenario),by = "scenarioID")
+  left_join(select(filtered,scenarioID,control_effectiveness,num.initial.cases,scenario),by = "scenarioID") %>%
+  mutate(control_effectiveness = recode(control_effectiveness,
+                                        `0.4` = "40% traced",
+                                        `0.6` = "60% traced",
+                                        `0.8` = "80% traced"),
+         scenario = recode(scenario,
+                           primary_quarantine = "Primary tracing",
+                           secondary_quarantine = "Secondary quarantine"))
 
 initial_case_figa <- dd %>%
   rename(intervention = scenario) %>%
