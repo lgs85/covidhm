@@ -443,7 +443,8 @@ dev.off()
 
 
 
-# Figure S5 - proportion asymptomaticR0
+
+# Figure S5 - R0 ----------------------------------------------------------
 
 filtered <- sen %>%
   filter(delay == "Short",
@@ -500,7 +501,7 @@ dev.off()
 
 
 
-# Figure S5 - proportion asymptomatic -------------------------------------
+# Figure S6 - proportion asymptomatic -------------------------------------
 
 
 filtered <- sen %>%
@@ -548,7 +549,7 @@ asym_fig <- plot_grid(asym_figa,asym_figb, legend,rel_widths = c(1,1,0.5),nrow =
 
 
 #Write to pdf
-pdf("inst/plots/Figure_S5.pdf",
+pdf("inst/plots/Figure_S6.pdf",
     width = 12,
     height = 5)
 
@@ -557,7 +558,7 @@ dev.off()
 
 
 
-# Figure S6 - theta -------------------------------------------------------
+# Figure S7 - theta -------------------------------------------------------
 
 filtered <- sen %>%
   filter(delay == "Short",
@@ -604,7 +605,7 @@ theta_figb <- dd %>%
 theta_fig <- plot_grid(theta_figa,theta_figb,legend, rel_widths = c(1,1,0.5),nrow = 1)
 
 #Write to pdf
-pdf("inst/plots/Figure_S6.pdf",
+pdf("inst/plots/Figure_S7.pdf",
     width = 12,
     height = 5)
 
@@ -613,7 +614,7 @@ dev.off()
 
 
 
-# Figure S7 - delay -------------------------------------------------------
+# Figure S8 - delay -------------------------------------------------------
 
 
 filtered <- sen %>%
@@ -662,7 +663,7 @@ delay_figb <- dd %>%
 delay_fig <- plot_grid(delay_figa,delay_figb,legend, rel_widths = c(1,1,0.5),nrow = 1)
 
 #Write to pdf
-pdf("inst/plots/Figure_S7.pdf",
+pdf("inst/plots/Figure_S8.pdf",
     width = 12,
     height = 5)
 
@@ -672,7 +673,7 @@ dev.off()
 
 
 
-# Figure S8 - initial cases ----------------------------------------------
+# Figure S9 - initial cases ----------------------------------------------
 
 
 filtered <- sen %>%
@@ -720,7 +721,7 @@ initial_case_figb <- dd %>%
 initial_case_fig <- plot_grid(initial_case_figa,initial_case_figb, legend,rel_widths = c(1,1,0.5),nrow = 1)
 
 #Write to pdf
-pdf("inst/plots/Figure_S8.pdf",
+pdf("inst/plots/Figure_S9.pdf",
     width = 12,
     height = 5)
 
@@ -731,13 +732,13 @@ dev.off()
 
 
 
-# Figure S9 - outside infection ------------------------------------------
+# Figure S10 - outside infection ------------------------------------------
 
 out_fig <- out  %>%
   case_plot(facet = "grid", gridvar = "outside")
 
 
-pdf("inst/plots/Figure_S9.pdf",
+pdf("inst/plots/Figure_S10.pdf",
     width = 12,
     height = 8)
 out_fig
@@ -746,14 +747,14 @@ dev.off()
 
 
 
-# Figure S10 - distancing with advanced method ----------------------------
+# Figure S11 - distancing with advanced method ----------------------------
 
 
 dis2_fig <- dis2  %>%
   case_plot(facet = "grid", gridvar = "distancing", testing = TRUE)
 
 
-pdf("inst/plots/Figure_S10.pdf",
+pdf("inst/plots/Figure_S11.pdf",
     width =12,
     height = 8)
 dis2_fig
