@@ -19,7 +19,7 @@ dist_setup <- function(dist_shape = NULL, dist_scale = NULL) {
 
 
 #' Matrix to pairwise list without diagonal
-#' @author lewis Spurgin
+#' @author Lewis Spurgin
 #' @param m matrix of contacts
 #' @return
 #' @export
