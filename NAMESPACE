@@ -2,7 +2,9 @@
 
 export("%>%")
 export(case_plot)
+export(case_plot2)
 export(dist1_func)
+export(dist1b_func)
 export(dist2_func)
 export(dist_setup)
 export(draw.contagion)

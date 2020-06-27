@@ -17,7 +17,7 @@ for(i in 1:nreps)
                       num.initial.cases = 1,
                       prop.ascertain = 0,
                       cap_max_days = 21,
-                      R = 1, presymrate = 0.4, delay_shape = 1,
+                      R = 0.8, presymrate = 0.2, delay_shape = 1,
                       delay_scale = 1.4, prop.asym = 0.4,
                       quarantine = FALSE, isolation = FALSE,
                       tracing = FALSE, secondary = FALSE,

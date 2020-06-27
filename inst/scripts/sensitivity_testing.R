@@ -33,10 +33,10 @@ scenarios <- tidyr::expand_grid(
   )),
   presymrate = c(0.2,0.4),
   prop.asym = c(0.2, 0.4),
-  control_effectiveness = c(0.4, 0.6, 0.8),
+  control_effectiveness = c(0.3, 0.6, 0.9),
   num.initial.cases = c(1, 5),
   scenario = c("primary_quarantine", "secondary_quarantine"),
-  R = c(0.7,1,2),
+  R = c(0.5,0.8,2),
   sensitivity = c("low","high")) %>%
   tidyr::unnest("delay_group") %>%
   dplyr::mutate(scenarioID = 1:dplyr::n())

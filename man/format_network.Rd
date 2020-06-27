@@ -19,5 +19,5 @@ Matrix to pairwise list without diagonal
 
 }
 \author{
-lewis Spurgin
+Lewis Spurgin
 }

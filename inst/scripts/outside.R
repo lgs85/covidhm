@@ -23,8 +23,8 @@ future::plan("multiprocess")
 # Set up partial function -------------------------------------------------
 
 scenario_sim2 <- partial(scenario_sim, net = haslemere, n.sim = nreps, num.initial.cases = 1,prop.asym=0.4,
-                         prop.ascertain = 0.8, cap_max_days = 69, delay_shape = 1, delay_scale = 1.4,
-                         R = 1,presymrate = 0.4, sensitivity = "high",
+                         prop.ascertain = 0.9, cap_max_days = 69, delay_shape = 1, delay_scale = 1.4,
+                         R = 1,presymrate = 0.2, sensitivity = "high",
                          testing = "none",cap_max_tests = Inf)
 
 # Simulate scenarios ------------------------------------------------------

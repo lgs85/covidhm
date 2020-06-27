@@ -50,14 +50,10 @@ outbreak_step <- function(day, case_data, net = haslemere,
                           cap_max_tests = NULL) {
 
 
-
   # Rename some variables ---------------------------------------------------
 
   newnet <- net
   colnames(newnet) <- c("caseid","contact","rate")
-
-
-
 
 
 
@@ -160,7 +156,7 @@ outbreak_step <- function(day, case_data, net = haslemere,
     asymrate <- ifelse(case_data$asym[infector_rows],0.5,1)
 
     infected <- rbernoulli(nrow(new_cases),
-                           p = inf_prob(day = day - case_data$exposure[infector_rows],
+                           p = inf_prob(day = rep(day,length(infector_rows)),
                                         inc_samp = case_data$onset[infector_rows],
                                         contactrate = new_cases$rate,
                                         theta = presymrate,
@@ -367,8 +363,8 @@ outbreak_step <- function(day, case_data, net = haslemere,
     test_results <- (case_data$status[new_tests] == "I" &
                        rbernoulli(length(new_tests),
                                   ifelse(case_data$asym[new_tests],
-                                         0.5,
-                                         0.9))) |
+                                         1,
+                                         1))) |
       rbernoulli(length(new_tests), 0.02)
 
 
@@ -390,15 +386,11 @@ outbreak_step <- function(day, case_data, net = haslemere,
     case_data$test_time[new_tests] <- day
 
     #You can get a positive result if you're positive, and you test positive
-    #90% chance of testing positive for symptomatic cases
-    #50% for asymptomatic cases
+    #10% false negative rate
     #2% false positive rate
 
     test_results <- (case_data$status[new_tests] == "I" &
-                       rbernoulli(length(new_tests),
-                                  ifelse(case_data$asym[new_tests],
-                                         0.5,
-                                         0.9))) |
+                       rbernoulli(length(new_tests), 0.9)) |
       rbernoulli(length(new_tests), 0.02)
 
     test_results <- case_data$status[new_tests] == "I"
