@@ -16,7 +16,7 @@
 #' @export
 #' @importFrom dplyr group_by mutate ungroup sample_frac
 #' @importFrom tidyr nest unnest
-#' @importFrom furrr future_map
+#' @importFrom furrr future_map future_options
 #' @importFrom purrr safely
 #' @examples
 #'\dontrun{
@@ -74,7 +74,7 @@ parameter_sweep <- function(scenarios = NULL, samples = 1,
     dplyr::ungroup() %>%
     ##Randomise the order of scenarios - helps share the load across cores
     dplyr::sample_frac(size = 1, replace = FALSE) %>%
-    dplyr::mutate(sims = furrr::future_map(
+    dplyr::mutate(sims = map(
       data,
       ~ safe_sim_fn(n.sim = samples,
                     num.initial.cases = .$num.initial.cases,
@@ -83,12 +83,10 @@ parameter_sweep <- function(scenarios = NULL, samples = 1,
                     delay_scale = .$delay_scale,
                     prop.ascertain = .$control_effectiveness,
                     prop.asym = .$prop.asym,
-                    sensitivity = .$sensitivity,
                     scenario = .$scenario,
                     R = .$R
       )[[1]],
-      .progress = show_progress
-    )) %>%
+      .progress = show_progress)) %>%
     tidyr::unnest(cols = "data")
 
   return(scenario_sims)

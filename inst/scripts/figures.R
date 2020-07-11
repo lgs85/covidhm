@@ -168,12 +168,17 @@ dev.off()
 # Figure 2 - intervention scenarios ---------------------------------------
 
 sce_figa <- sce  %>%
-  mutate(intervention = recode(intervention, Nothing = "No control")) %>%
+  mutate(intervention = recode(intervention,
+                               nothing = "No control",
+                               isolation = "Case isolation",
+                               primary_quarantine = "Primary tracing",
+                               secondary_quarantine = "Secondary tracing")) %>%
   mutate(intervention = factor(intervention,
                                levels = c("No control",
                                           "Case isolation",
                                           "Primary tracing",
                                           "Secondary tracing"))) %>%
+  unnest(cols = "results") %>%
   case_plot(nrow = 1)+
   theme(legend.position = "top")
 
@@ -266,8 +271,14 @@ tes_fig <- tes %>%
 
 
 dis_fig <- dis  %>%
-  mutate(intervention = recode(intervention, Nothing = "No control")) %>%
-  case_plot(facet = "grid", gridvar = "distancing")+
+  mutate(dist = paste0(dist*100,"% reduction"),
+    intervention = recode(intervention,
+                               nothing = "No control",
+                               isolation = "Case isolation",
+                               primary_quarantine = "Primary tracing",
+                               secondary_quarantine = "Secondary tracing")) %>%
+  unnest(cols = "results") %>%
+  case_plot(facet = "grid", gridvar = "dist")+
   theme(legend.position = "none")
 
 fig3 <- plot_grid(tes_fig,dis_fig,nrow = 2,labels = "AUTO",rel_heights = c(0.45,0.55))
@@ -285,21 +296,26 @@ dev.off()
 # Figure 4 - null networks ------------------------------------------------
 
 net_figa <- net  %>%
-  mutate(network = recode(network, lattice = "Lattice null",
-                          degcont = "Degree null",
-                          rand = "Edge null",
-                          cluster = "Cluster null")) %>%
-  mutate(intervention = recode(intervention, Nothing = "No control")) %>%
+  mutate(null = recode(null, latt = "Lattice null",
+                          deg = "Degree null",
+                          edge = "Edge null",
+                          clust = "Cluster null")) %>%
+  mutate(intervention = recode(intervention,
+                               nothing = "No control",
+                               isolation = "Case isolation",
+                               primary_quarantine = "Primary tracing",
+                               secondary_quarantine = "Secondary tracing")) %>%
   mutate(intervention = factor(intervention,
                                levels = c("No control",
                                           "Case isolation",
                                           "Primary tracing",
                                           "Secondary tracing")),
-         network = factor(network, levels = c("Edge null",
+         null = factor(null, levels = c("Edge null",
                                               "Degree null",
                                               "Lattice null",
                                               "Cluster null"))) %>%
-  case_plot(facet = "grid",gridvar = "network") +
+  unnest(cols = results) %>%
+  case_plot(facet = "grid",gridvar = "null") +
   theme(legend.position = "top")
 
 

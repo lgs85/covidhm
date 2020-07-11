@@ -5,8 +5,8 @@
 \title{Run a specified number of simulations with identical parameters}
 \usage{
 scenario_sim(
-  n.sim = 1,
-  net = haslemere,
+  n.sim,
+  net,
   prop.ascertain,
   cap_max_days,
   R,
@@ -17,8 +17,10 @@ scenario_sim(
   prop.asym,
   scenario,
   outside,
-  sensitivity = "high",
-  testing = "none",
+  distancing,
+  dist_func = NULL,
+  null.net = "none",
+  testing,
   cap_max_tests = NULL
 )
 }
@@ -47,11 +49,9 @@ scenario_sim(
 
 \item{outside}{infection rate from outside the network (must be 0 <= x <= 1)}
 
-\item{sensitivity}{character - must be "high" or "low"}
+\item{testing}{logical}
 
-\item{testing}{character - must be "realistic", "random" or "none"}
-
-\item{cap_max_tests}{integer - max number of daily tests. Only use if testing != "none"}
+\item{cap_max_tests}{integer - max number of daily tests. Only use if testing == TRUE}
 }
 \value{
 data.frame of weekly cases, isolations, quarantines and tests for each simulation

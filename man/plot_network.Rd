@@ -55,8 +55,6 @@ plot_network(
 
 \item{secondary}{logical whether secondary contact tracing is in effect}
 
-\item{sensitivity}{app sensitivity - "high" or "low"}
-
 \item{testing}{"realistic", "random" or "none"}
 
 \item{cap_max_tests}{integer - maximum number of tests}

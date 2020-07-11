@@ -87,7 +87,6 @@ outbreak_model <- function(net = haslemere,
                                secondary = secondary,
                                prop.asym = prop.asym,
                                outside = outside,
-                               sensitivity = sensitivity,
                                testing = testing,
                                cap_max_tests = cap_max_tests)
 

@@ -16,7 +16,6 @@
 #' @param tracing logical whether tracing is in effect
 #' @param isolation logical whether isolation is in effect
 #' @param secondary logical whether secondary contact tracing is in effect
-#' @param sensitivity app sensitivity - "high" or "low"
 #' @param testing "realistic", "random" or "none"
 #' @param cap_max_tests integer - maximum number of tests
 #' @rawNamespace import(dplyr, except = c(union,as_data_frame,groups))
@@ -38,7 +37,7 @@
 #' case_data <- outbreak_setup(net = haslemere, num.initial.cases = 1,incfn,delayfn,prop.asym=0, isolation = TRUE)
 #' # generate next generation of cases
 #' outbreak_step(day = 1, case_data = case_data,net = haslemere, prop.asym = 0.4, incfn = incfn, delayfn = delayfn, prop.ascertain = 1,
-#' presymrate = 0.4, R = 6.5, quarantine = TRUE, isolation = TRUE, tracing = TRUE, secondary = TRUE, sensitivity = "high", outside = 0.001, testing = "none")
+#' presymrate = 0.4, R = 6.5, quarantine = TRUE, isolation = TRUE, tracing = TRUE, secondary = TRUE, outside = 0.001, testing = "none")
 #' }
 
 outbreak_step <- function(day, case_data, net = haslemere,
@@ -46,7 +45,7 @@ outbreak_step <- function(day, case_data, net = haslemere,
                           prop.ascertain, presymrate, R, quarantine,
                           isolation, tracing,
                           secondary, outside,
-                          sensitivity = "high", testing = "none",
+                          testing = FALSE,
                           cap_max_tests = NULL) {
 
 
@@ -225,7 +224,7 @@ outbreak_step <- function(day, case_data, net = haslemere,
       #Get contacts of infectious inds from network
       case_contacts <- filter(newnet,
                               caseid %in% new_ill$caseid,
-                              rate > ifelse(sensitivity == "high", 0, 1))
+                              rate > 0)
 
       new_contact_rows <- match(case_contacts$contact,
                                 case_data$caseid)
@@ -252,7 +251,7 @@ outbreak_step <- function(day, case_data, net = haslemere,
 
         sec_contacts <- filter(newnet,
                                caseid %in% case_contacts$contact,
-                               rate > ifelse(sensitivity == "high", 0, 1))
+                               rate > 0)
 
         new_contact_rows <- match(sec_contacts$contact,
                                   case_data$caseid)
@@ -332,9 +331,7 @@ outbreak_step <- function(day, case_data, net = haslemere,
 
   # Test and release quarantined and isolated cases ------------------------------------
 
-  #'realistic testing' - this is the default
-
-  if(testing == "realistic")
+  if(testing)
   {
     #Identify untested inds and assign a test time based on their isolation and quarantine time
     untested <- which(case_data$test_time == Inf)
@@ -356,15 +353,12 @@ outbreak_step <- function(day, case_data, net = haslemere,
 
 
     #Run tests
-    #90% chance of testing positive for symptomatic cases
-    #50% for asymptomatic cases
+    #90% chance of testing positive
     #2% false positive rate
 
     test_results <- (case_data$status[new_tests] == "I" &
                        rbernoulli(length(new_tests),
-                                  ifelse(case_data$asym[new_tests],
-                                         1,
-                                         1))) |
+                                  0.9)) |
       rbernoulli(length(new_tests), 0.02)
 
 
@@ -372,38 +366,6 @@ outbreak_step <- function(day, case_data, net = haslemere,
 
     case_data$release_time[negative_tests] <- case_data$test_time[negative_tests]
 
-  }
-
-
-
-  # Testing of random number of individuals each day
-
-  if(testing == "random")
-  {
-
-    #Today's tests
-    new_tests <- sample(1:nrow(case_data), cap_max_tests)
-    case_data$test_time[new_tests] <- day
-
-    #You can get a positive result if you're positive, and you test positive
-    #10% false negative rate
-    #2% false positive rate
-
-    test_results <- (case_data$status[new_tests] == "I" &
-                       rbernoulli(length(new_tests), 0.9)) |
-      rbernoulli(length(new_tests), 0.02)
-
-    test_results <- case_data$status[new_tests] == "I"
-
-    isolated_negative_tests <- c(which(case_data$isolated[new_tests[!test_results]]),
-                                 which(case_data$quarantined[new_tests[!test_results]]))
-    case_data$release_time[isolated_negative_tests] <- day
-
-    free_positive_tests <- new_tests[!case_data$isolated[new_tests] &
-                                       !case_data$quarantined[new_tests] &
-                                       test_results]
-    case_data$isolated_time[free_positive_tests] <- day
-    case_data$release_time[free_positive_tests] <- day+14
   }
 
 

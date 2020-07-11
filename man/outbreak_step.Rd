@@ -19,8 +19,7 @@ outbreak_step(
   tracing,
   secondary,
   outside,
-  sensitivity = "high",
-  testing = "none",
+  testing = FALSE,
   cap_max_tests = NULL
 )
 }
@@ -51,8 +50,6 @@ outbreak_step(
 
 \item{secondary}{logical whether secondary contact tracing is in effect}
 
-\item{sensitivity}{app sensitivity - "high" or "low"}
-
 \item{testing}{"realistic", "random" or "none"}
 
 \item{cap_max_tests}{integer - maximum number of tests}
@@ -62,6 +59,20 @@ outbreak_step(
 }
 \description{
 Infections on one day in the network model
+}
+\examples{
+
+\dontrun{
+# incubation period sampling function
+incfn <- dist_setup(dist_shape = 2.322737,dist_scale = 6.492272)
+# delay distribution sampling function
+delayfn <- dist_setup(1, 1.4)
+# generate initial cases
+case_data <- outbreak_setup(net = haslemere, num.initial.cases = 1,incfn,delayfn,prop.asym=0, isolation = TRUE)
+# generate next generation of cases
+outbreak_step(day = 1, case_data = case_data,net = haslemere, prop.asym = 0.4, incfn = incfn, delayfn = delayfn, prop.ascertain = 1,
+presymrate = 0.4, R = 6.5, quarantine = TRUE, isolation = TRUE, tracing = TRUE, secondary = TRUE, outside = 0.001, testing = "none")
+}
 }
 \author{
 Lewis Spurgin

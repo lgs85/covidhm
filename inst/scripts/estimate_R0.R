@@ -25,7 +25,7 @@ for(i in 1:nreps)
                       testing = "none", cap_max_tests = NULL,
                       weekly = FALSE, s = NULL)
 
-  #Calculate hoy many infections from the starting node (who has exposure time of 0)
+  #Calculate how many infections from the starting node (who has exposure time of 0)
   R0[i] <- sum(x$infector == filter(x,exposure == 0)$caseid,na.rm = T)
 
   #Get the exposure time of all individuals infected from the starting infector

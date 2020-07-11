@@ -1,13 +1,13 @@
 # Assessment of contact tracing, social distancing, and real-world social tracking data for control of COVID-19 
 
-*Disclaimer: this is working code, which may change over time*
+*Disclaimer: currently undergoing changes due to incorporating reviewer comments. Please get in touch if you have any issues.*
 
 This repository contains code for simulating COVID-19 dynamics in a range of scenarios across a real-world social network. The epidemic model is based conceptually on a branching-process model of contact-tracing and COVID-19, which can be accessed [here](https://github.com/cmmid/ringbp).
 
 
 
 ## Abstract
-Currently, non-pharmaceutical interventions are the only option for controlling the spread of SARS-CoV-2. As well as wider social distancing measures, case isolation combined with detailed tracing of contacts could contribute to the ongoing control of COVID-19 outbreaks, in line with the World Health Organisation’s “test, trace, isolate” recommendation. However, extensive contact tracing may require a large proportion of the population to be quarantined, and it remains unclear how to best combine contact tracing with other social distancing strategies. Further, real-world social tracking data is limited, and we do not understand how real-world dynamic networks could influence the success of targeted control strategies. We examined the effectiveness of control strategies for SARS-CoV-2 across the ‘Haslemere network’, a real-world social network generated from three full days of continuous and simultaneous mobile-phone app-based tracking of 468 individuals within a set area as part of a recent BBC television documentary. We show that relevant social contact events can be robustly determined from this data, and that social contact data generally predicts exposure to contagion processes. By applying an empirically-parameterised epidemic model to the real-world social network, we found that case isolation and quarantining of primary and secondary contacts substantially reduced the size of simulated outbreaks, with secondary contact tracing reducing outbreak size to a greater extent than primary contact tracing. However, secondary contact tracing required up to 80% of the population to be quarantined during outbreak peaks for effective control. Testing and releasing non-infectious individuals reduced the numbers of quarantined individuals without large increases in outbreak size, but very high testing rates were required for this to be effective. Finally, we show that a combination of social distancing with contact tracing and testing may enable epidemic control while reducing the number of quarantined individuals, and without requiring unfeasibly high testing rates. In such scenarios when rates of social contact are reduced, primary contact tracing may be more efficient than secondary contact tracing, as it achieves similar levels of outbreak control but requires fewer individuals to be quarantined and tested. Our approach highlights the utility of real-world networks when considering epidemic spread, and provides new insight into how contact tracing and social distancing strategies can be combined to control COVID-19 outbreaks.
+Case isolation and contact tracing can contribute to the control of COVID-19 outbreaks. However, it remains unclear how real-world networks could influence the effectiveness and efficiency of such approaches. To address this issue, we simulated control strategies for SARS-CoV-2 in a real-world social network generated from high resolution GPS data. We found that tracing contacts-of-contacts reduced the size of simulated outbreaks more than tracing of only contacts, but resulted in almost half of the local population being quarantined at a single point in time. Testing and releasing non-infectious individuals led to increases in outbreak size, suggesting that contact tracing and quarantine may be most effective when it acts as a ‘local lockdown’ when contact rates are high. Finally, we estimated that combining physical distancing with contact tracing could enable epidemic control while reducing the number of quarantined individuals. Our approach highlights the importance of network structure and social dynamics in evaluating the potential impact of SARS-CoV-2 control.
 
 ## Usage
 
@@ -41,9 +41,9 @@ num.initial.cases = 1,
 prop.asym = 0.4,
 delay_shape =  1,
 delay_scale = 1.4,
-prop.ascertain = 0.8,
-presymrate = 0.4,
-R = 6.5,
+prop.ascertain = 0.9,
+presymrate = 0.2,
+R = 0.8,
 outside = 0.001,
 sensitivity = "high",
 testing = "none",
@@ -65,9 +65,9 @@ Run a single scenario for 10 simulations. Use `?scenario_sim` for an explanation
 library(covidhm)
 library(ggplot2)
 
-res <- scenario_sim(net = haslemere, n.sim = 10, num.initial.cases = 5,prop.asym=0.4,
-                             prop.ascertain = 0.4, cap_max_days = 70,
-                             delay_shape = 1, delay_scale = 1.4, R = 6.5, presymrate = 0.4, scenario = "nothing",
+res <- scenario_sim(net = haslemere, n.sim = 10, num.initial.cases = 1,prop.asym=0.4,
+                             prop.ascertain = 0.9, cap_max_days = 70,
+                             delay_shape = 1, delay_scale = 1.4, R = 0.8, presymrate = 0.2, scenario = "nothing",
                              sensitivity = "high", testing = "none", outside = 0.001)
 
 # Plot of raw cumulative cases

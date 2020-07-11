@@ -13,9 +13,8 @@
 #' @param presymrate rate of presymptomatic transmission (must be 0 <= x <= 1)
 #' @param prop.asym proportion of asymptomatic cases (must be 0 <= x <= 1)
 #' @param outside infection rate from outside the network (must be 0 <= x <= 1)
-#' @param sensitivity character - must be "high" or "low"
-#' @param testing character - must be "realistic", "random" or "none"
-#' @param cap_max_tests integer - max number of daily tests. Only use if testing != "none"
+#' @param testing logical
+#' @param cap_max_tests integer - max number of daily tests. Only use if testing == TRUE
 #'
 #' @importFrom purrr safely
 #' @importFrom dplyr bind_rows mutate
@@ -41,20 +40,39 @@
 #' }
 #'
 
-scenario_sim <- function(n.sim = 1, net = haslemere, prop.ascertain, cap_max_days, R, presymrate,
+scenario_sim <- function(n.sim, net, prop.ascertain, cap_max_days, R, presymrate,
                          delay_shape, delay_scale, num.initial.cases, prop.asym, scenario,
-                         outside, sensitivity = "high", testing = "none", cap_max_tests = NULL) {
+                         outside, distancing, dist_func = NULL, null.net = "none", testing,
+                         cap_max_tests = NULL) {
 
 
   # Check input parameters --------------------------------------------------
 
-  if(!sensitivity %in% c("high","low")) stop("sensitivity needs to be 'high' or 'low'")
-  if(!testing %in% c("realistic","random", "none")) stop("testing needs to be 'realistic', 'random' or 'none'")
   if(floor(prop.ascertain) != 0) stop("prop.ascertain must between 0 and 1")
   if(floor(presymrate) != 0) stop("presymrate must between 0 and 1")
   if(floor(prop.asym) != 0) stop("prop.asym must between 0 and 1")
   if(floor(outside) != 0) stop("outside must between 0 and 1")
 
+
+
+  # Set up networks ---------------------------------------------------------
+
+  message("Setting up networks...")
+
+  if(null.net == "none")
+  {
+    amlist <- rep(list(net),n.sim)
+  } else
+  {
+    amlist <- replicate(n.sim, network_null(net,returns = "matrix",null = null.net), simplify = FALSE)
+  }
+
+  if(distancing > 0)
+  {
+    amlist <- map(amlist, ~ dist_func(., "matrix", distancing))
+  }
+
+  netlist <- map(amlist, ~format_network(.))
 
   # Set up scenarios --------------------------------------------------------
 
@@ -89,10 +107,11 @@ scenario_sim <- function(n.sim = 1, net = haslemere, prop.ascertain, cap_max_day
   }
 
 
+  message("Running epidemic model...")
 
   # Run n.sim number of model runs and put them all together in a big data.frame
-  res <- purrr::map(.x = 1:n.sim, ~ outbreak_model(num.initial.cases = num.initial.cases,
-                                                   net = net,
+  res <- purrr::map(netlist, ~ outbreak_model(num.initial.cases = num.initial.cases,
+                                                   net = .,
                                                    prop.ascertain = prop.ascertain,
                                                    cap_max_days = cap_max_days,
                                                    delay_shape = delay_shape,
@@ -105,7 +124,6 @@ scenario_sim <- function(n.sim = 1, net = haslemere, prop.ascertain, cap_max_day
                                                    tracing = tracing,
                                                    isolation = isolation,
                                                    outside = outside,
-                                                   sensitivity = sensitivity,
                                                    testing = testing,
                                                    cap_max_tests = cap_max_tests))
 
@@ -113,5 +131,6 @@ scenario_sim <- function(n.sim = 1, net = haslemere, prop.ascertain, cap_max_day
   # bind output together and add simulation index
   res <- dplyr::bind_rows(res) %>%
     dplyr::mutate(sim = rep(1:n.sim, rep(floor(cap_max_days / 7) + 1, n.sim)))
+  message("Done!")
   return(res)
 }
