@@ -2,7 +2,7 @@
 #' @author Lewis Spurgin
 #' @author Joel Hellewell
 #'
-#' @param net network in pairwise list format. Object `haslemere` is built into the package.
+#' @param net network in pairwise list format.
 #' @param num.initial.cases integer number of initial cases
 #' @param incfn function that samples from incubation period Weibull distribution; generated using dist_setup
 #' @param delayfn function that samples from the onset-to-hospitalisation delay Weibull distribution; generated using dist_setup
@@ -16,11 +16,13 @@
 #' @examples
 #'
 #'\dontrun{
+#' load("data-raw/am_list.RData")
+#' haslemere <- format_network(am_list[[1]])
 #' # incubation period sampling function
 #' incfn <- dist_setup(dist_shape = 2.322737,dist_scale = 6.492272)
 #' # delay distribution sampling function
 #' delayfn <- dist_setup(dist_shape = 1,dist_scale = 1.4)
-#' outbreak_setup(net, num.initial.cases = 5,incfn,delayfn,prop.asym=0, isolation = TRUE)
+#' outbreak_setup(haslemere, num.initial.cases = 1,incfn,delayfn,prop.asym=0, isolation = TRUE)
 #'}
 #'
 #'

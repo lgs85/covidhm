@@ -5,7 +5,7 @@
 \title{Run a single instance of the branching process model}
 \usage{
 outbreak_model(
-  net = haslemere,
+  net,
   num.initial.cases,
   prop.ascertain,
   cap_max_days,
@@ -19,15 +19,15 @@ outbreak_model(
   tracing,
   secondary,
   outside,
-  sensitivity = "high",
-  testing = "none",
+  testing,
   cap_max_tests = NULL,
   weekly = TRUE,
-  s = NULL
+  s = NULL,
+  test_neg
 )
 }
 \arguments{
-\item{net}{network from which to sample cases, in pairwise list format. Object \code{haslemere} is built into the package}
+\item{net}{network from which to sample cases, in pairwise list format.}
 
 \item{num.initial.cases}{integer number of initial cases}
 
@@ -51,7 +51,9 @@ outbreak_model(
 
 \item{secondary}{logical whether secondary contact tracing is in effect}
 
-\item{testing}{"realistic", "random" or "none"}
+\item{outside}{daily probability of infection from outside the network}
+
+\item{testing}{logical whether testing is in effect}
 
 \item{cap_max_tests}{integer - maximum number of tests}
 
@@ -68,9 +70,12 @@ Run a single instance of the branching process model
 \examples{
 
 \dontrun{
-outbreak_model(net = haslemere, num.initial.cases = 1, prop.ascertain = 0.8, cap_max_days = 69, R = 6.5, presymrate = 0.4,
+load("data-raw/am_list.RData")
+haslemere <- format_network(am_list[[1]])
+
+outbreak_model(net = haslemere, num.initial.cases = 1, prop.ascertain = 0.9, cap_max_days = 69, R = 0.8, presymrate = 0.2,
 delay_shape = 1,delay_scale = 1.4,prop.asym = 0.4, quarantine = TRUE, isolation = TRUE, tracing = TRUE, secondary = TRUE,
-outside = 0.001, sensitivity = "high", testing = "none")}
+outside = 0.001, testing = FALSE, test_neg = 0.1)}
 
 
 }

@@ -18,7 +18,7 @@ network_null(
 \item{null}{type of simulation to perform "edge" = randomised edges, "deg" = degrees retained, "latt" = lattice, "clust" = clustered}
 }
 \value{
-
+see returns
 }
 \description{
 Create null networks

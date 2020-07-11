@@ -1,4 +1,4 @@
-# Assessment of contact tracing, social distancing, and real-world social tracking data for control of COVID-19 
+# Combining fine-scale social contact data with epidemic modelling reveals interactions between contact tracing, quarantine, testing and physical distancing for controlling COVID-19
 
 *Disclaimer: currently undergoing changes due to incorporating reviewer comments. Please get in touch if you have any issues.*
 
@@ -7,7 +7,7 @@ This repository contains code for simulating COVID-19 dynamics in a range of sce
 
 
 ## Abstract
-Case isolation and contact tracing can contribute to the control of COVID-19 outbreaks. However, it remains unclear how real-world networks could influence the effectiveness and efficiency of such approaches. To address this issue, we simulated control strategies for SARS-CoV-2 in a real-world social network generated from high resolution GPS data. We found that tracing contacts-of-contacts reduced the size of simulated outbreaks more than tracing of only contacts, but resulted in almost half of the local population being quarantined at a single point in time. Testing and releasing non-infectious individuals led to increases in outbreak size, suggesting that contact tracing and quarantine may be most effective when it acts as a ‘local lockdown’ when contact rates are high. Finally, we estimated that combining physical distancing with contact tracing could enable epidemic control while reducing the number of quarantined individuals. Our approach highlights the importance of network structure and social dynamics in evaluating the potential impact of SARS-CoV-2 control.
+Case isolation and contact tracing can contribute to the control of COVID-19 outbreaks1,2. However, it remains unclear how real-world networks could influence the effectiveness and efficiency of such approaches. To address this issue, we simulated control strategies for SARS-CoV-2 in a real-world social network generated from high resolution GPS data3,4. We found that tracing contacts-of-contacts reduced the size of simulated outbreaks more than tracing of only contacts, but resulted in almost half of the local population being quarantined at a single point in time. Testing and releasing non-infectious individuals led to increases in outbreak size, suggesting that contact tracing and quarantine may be most effective when it acts as a ‘local lockdown’ when contact rates are high. Finally, we estimated that combining physical distancing with contact tracing could enable epidemic control while reducing the number of quarantined individuals. Our approach highlights the importance of network structure and social dynamics in evaluating the potential impact of SARS-CoV-2 control.
 
 ## Usage
 
@@ -45,8 +45,7 @@ prop.ascertain = 0.9,
 presymrate = 0.2,
 R = 0.8,
 outside = 0.001,
-sensitivity = "high",
-testing = "none",
+testing = FALSE,
 s = 333,
 isolation = FALSE,
 secondary = FALSE,
@@ -65,10 +64,10 @@ Run a single scenario for 10 simulations. Use `?scenario_sim` for an explanation
 library(covidhm)
 library(ggplot2)
 
-res <- scenario_sim(net = haslemere, n.sim = 10, num.initial.cases = 1,prop.asym=0.4,
+res <- scenario_sim(net = m, n.sim = 10, num.initial.cases = 1,prop.asym=0.4,
                              prop.ascertain = 0.9, cap_max_days = 70,
                              delay_shape = 1, delay_scale = 1.4, R = 0.8, presymrate = 0.2, scenario = "nothing",
-                             sensitivity = "high", testing = "none", outside = 0.001)
+                             testing = FALSE, outside = 0.001, distancing = 0)
 
 # Plot of raw cumulative cases
 ggplot(data=res, aes(x=week, y=cumcases,col = sim)) +
@@ -87,8 +86,8 @@ Run the analyses in the terminal with the following commands (NB - these take se
 Rscript inst/scripts/scenarios.R
 Rscript inst/scripts/network.R
 Rscript inst/scripts/distancing.R
-Rscript inst/scripts/distancing2.R
 Rscript inst/scripts/outside.R
+Rscript inst/scripts/testing.R
 Rscript inst/scripts/sensitivity_testing.R
 
 ```

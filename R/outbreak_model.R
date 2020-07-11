@@ -19,12 +19,15 @@
 #' @examples
 #'
 #' \dontrun{
-#' outbreak_model(net = haslemere, num.initial.cases = 1, prop.ascertain = 0.8, cap_max_days = 69, R = 6.5, presymrate = 0.4,
+#' load("data-raw/am_list.RData")
+#' haslemere <- format_network(am_list[[1]])
+#'
+#' outbreak_model(net = haslemere, num.initial.cases = 1, prop.ascertain = 0.9, cap_max_days = 69, R = 0.8, presymrate = 0.2,
 #' delay_shape = 1,delay_scale = 1.4,prop.asym = 0.4, quarantine = TRUE, isolation = TRUE, tracing = TRUE, secondary = TRUE,
-#' outside = 0.001, sensitivity = "high", testing = "none")}
+#' outside = 0.001, testing = FALSE, test_neg = 0.1)}
 #'
 #'
-outbreak_model <- function(net = haslemere,
+outbreak_model <- function(net,
                            num.initial.cases,
                            prop.ascertain,
                            cap_max_days,
@@ -32,16 +35,15 @@ outbreak_model <- function(net = haslemere,
                            delay_scale, prop.asym,
                            quarantine, isolation,
                            tracing, secondary,
-                           outside, sensitivity = "high",
-                           testing = "none", cap_max_tests = NULL,
-                           weekly = TRUE, s = NULL) {
+                           outside, testing, cap_max_tests = NULL,
+                           weekly = TRUE, s = NULL,test_neg) {
 
   # Set up functions to sample from distributions
   # incubation period sampling function
   incfn <- dist_setup(dist_shape = 2.322737,
                       dist_scale = 6.492272)
-  # incfn <- dist_setup(dist_shape = 3.303525,dist_scale = 6.68849) # incubation function for ECDC run
-  # onset to isolation delay sampling function
+
+    # onset to isolation delay sampling function
   delayfn <- dist_setup(delay_shape,
                         delay_scale)
 
@@ -88,7 +90,8 @@ outbreak_model <- function(net = haslemere,
                                prop.asym = prop.asym,
                                outside = outside,
                                testing = testing,
-                               cap_max_tests = cap_max_tests)
+                               cap_max_tests = cap_max_tests,
+                               test_neg = test_neg)
 
 
     total.cases <- sum(!is.na(case_data$exposure))

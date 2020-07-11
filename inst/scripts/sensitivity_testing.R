@@ -19,7 +19,7 @@ load("data-raw/am_list.RData")
 
 # Set number of replicates ------------------------------------------------
 
-nreps = 5
+nreps = 1000
 
 
 # Parameter sweep for sensitivity testing ---------------------------------

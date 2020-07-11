@@ -37,6 +37,8 @@ library(tibble)
 library(dplyr)
 
 nreps = 1
+# Parameter sweep for sensitivity testing ---------------------------------
+
 scenarios <- tidyr::expand_grid(
   ## Put parameters that are grouped by disease into this data.frame
   delay_group = list(tibble::tibble(
@@ -46,20 +48,20 @@ scenarios <- tidyr::expand_grid(
   )),
   presymrate = c(0.2,0.4),
   prop.asym = c(0.2, 0.4),
-  control_effectiveness = c(0.4, 0.6, 0.8),
+  control_effectiveness = c(0.3, 0.6, 0.9),
   num.initial.cases = c(1, 5),
   scenario = c("primary_quarantine", "secondary_quarantine"),
-  R = c(3.5, 6.5, 9.5),
-  sensitivity = c("low","high")) \%>\%
+  R = c(0.5,0.8,2)) \%>\%
   tidyr::unnest("delay_group") \%>\%
   dplyr::mutate(scenarioID = 1:dplyr::n())
 
 ## Parameterise fixed paramters
 sim_with_params <- purrr::partial(scenario_sim,
-                                  net = haslemere,
+                                  net = am_list[[1]],
                                   cap_max_days = 69,
                                   outside = 0.001,
-                                  testing = "none",
+                                  testing = FALSE,
+                                  distancing = 0,
                                   cap_max_tests = Inf)
 
 ## Set up multicore if using see ?future::plan for details

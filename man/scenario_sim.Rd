@@ -21,13 +21,14 @@ scenario_sim(
   dist_func = NULL,
   null.net = "none",
   testing,
-  cap_max_tests = NULL
+  cap_max_tests = NULL,
+  test_neg = 0.1
 )
 }
 \arguments{
 \item{n.sim}{number of simulations to run}
 
-\item{net}{network from which to sample cases}
+\item{net}{network from which to sample cases - square matrix}
 
 \item{prop.ascertain}{Probability that cases are ascertained by contact tracing}
 
@@ -41,7 +42,7 @@ scenario_sim(
 
 \item{delay_scale}{scale of distribution for delay between symptom onset and isolation}
 
-\item{num.initial.cases}{Initial number of cases in each initial cluster (must be 0 <= x <= 1)}
+\item{num.initial.cases}{Initial number of cases}
 
 \item{prop.asym}{proportion of asymptomatic cases (must be 0 <= x <= 1)}
 
@@ -49,9 +50,17 @@ scenario_sim(
 
 \item{outside}{infection rate from outside the network (must be 0 <= x <= 1)}
 
+\item{distancing}{proportion of rare contacts to remove (must be 0 <= x <= 1)}
+
+\item{dist_func}{how do you want to do social distancing? (must be dist_all or dist_no_reall - see aux functions)}
+
+\item{null.net}{do you want to simulate on a null network? Must be 'none', 'edge', 'deg', 'latt' or 'clust'}
+
 \item{testing}{logical}
 
 \item{cap_max_tests}{integer - max number of daily tests. Only use if testing == TRUE}
+
+\item{test_neg}{false negative rate for testing}
 }
 \value{
 data.frame of weekly cases, isolations, quarantines and tests for each simulation
@@ -61,22 +70,17 @@ Run a specified number of simulations with identical parameters
 }
 \examples{
 \dontrun{
-res <- scenario_sim(n.sim = 5,
-net = haslemere,
-prop.ascertain = 0.8,
-cap_max_days = 69,
-R = 6.5,
-presymrate = 0.4,
-delay_shape = 1,
-delay_scale = 1.4,
-num.initial.cases = 1,
-prop.asym = 0.4,
-scenario = "nothing",
-outside = 0.001,
-sensitivity = "high",
-testing = "none")
-}
+#Load association matrices
+load("data-raw/am_list.RData")
 
+#First item in the list is data across all days
+m <- am_list[[1]]
+
+res <- scenario_sim(net = m, n.sim = 10, num.initial.cases = 1,prop.asym=0.4,
+                    prop.ascertain = 0.9, cap_max_days = 70,
+                    delay_shape = 1, delay_scale = 1.4, R = 0.8, presymrate = 0.2, scenario = "nothing",
+                    testing = FALSE, outside = 0.001, distancing = 0)
+                    }
 }
 \author{
 Joel Hellewell

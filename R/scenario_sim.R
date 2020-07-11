@@ -2,8 +2,8 @@
 #' @author Joel Hellewell
 #' @author Lewis Spurgin
 #' @param n.sim number of simulations to run
-#' @param net network from which to sample cases
-#' @param num.initial.cases Initial number of cases in each initial cluster (must be 0 <= x <= 1)
+#' @param net network from which to sample cases - square matrix
+#' @param num.initial.cases Initial number of cases
 #' @param prop.ascertain Probability that cases are ascertained by contact tracing
 #' @param cap_max_days Maximum number of days to run process for
 #' @param delay_shape shape of distribution for delay between symptom onset and isolation
@@ -14,36 +14,36 @@
 #' @param prop.asym proportion of asymptomatic cases (must be 0 <= x <= 1)
 #' @param outside infection rate from outside the network (must be 0 <= x <= 1)
 #' @param testing logical
+#' @param distancing proportion of rare contacts to remove (must be 0 <= x <= 1)
+#' @param dist_func how do you want to do social distancing? (must be dist_all or dist_no_reall - see aux functions)
+#' @param null.net do you want to simulate on a null network? Must be 'none', 'edge', 'deg', 'latt' or 'clust'
+#' @param test_neg false negative rate for testing
 #' @param cap_max_tests integer - max number of daily tests. Only use if testing == TRUE
 #'
-#' @importFrom purrr safely
+#' @importFrom purrr safely map
 #' @importFrom dplyr bind_rows mutate
 #' @return data.frame of weekly cases, isolations, quarantines and tests for each simulation
 #' @export
 #'
 #' @examples
 #' \dontrun{
-#' res <- scenario_sim(n.sim = 5,
-#' net = haslemere,
-#' prop.ascertain = 0.8,
-#' cap_max_days = 69,
-#' R = 6.5,
-#' presymrate = 0.4,
-#' delay_shape = 1,
-#' delay_scale = 1.4,
-#' num.initial.cases = 1,
-#' prop.asym = 0.4,
-#' scenario = "nothing",
-#' outside = 0.001,
-#' sensitivity = "high",
-#' testing = "none")
-#' }
+#' #Load association matrices
+#' load("data-raw/am_list.RData")
 #'
+#' #First item in the list is data across all days
+#' m <- am_list[[1]]
+#'
+#' res <- scenario_sim(net = m, n.sim = 10, num.initial.cases = 1,prop.asym=0.4,
+#'                     prop.ascertain = 0.9, cap_max_days = 70,
+#'                     delay_shape = 1, delay_scale = 1.4, R = 0.8, presymrate = 0.2, scenario = "nothing",
+#'                     testing = FALSE, outside = 0.001, distancing = 0)
+#'                     }
+
 
 scenario_sim <- function(n.sim, net, prop.ascertain, cap_max_days, R, presymrate,
                          delay_shape, delay_scale, num.initial.cases, prop.asym, scenario,
                          outside, distancing, dist_func = NULL, null.net = "none", testing,
-                         cap_max_tests = NULL) {
+                         cap_max_tests = NULL, test_neg = 0.1) {
 
 
   # Check input parameters --------------------------------------------------
@@ -69,10 +69,10 @@ scenario_sim <- function(n.sim, net, prop.ascertain, cap_max_days, R, presymrate
 
   if(distancing > 0)
   {
-    amlist <- map(amlist, ~ dist_func(., "matrix", distancing))
+    amlist <- purrr::map(amlist, ~ dist_func(., "matrix", distancing))
   }
 
-  netlist <- map(amlist, ~format_network(.))
+  netlist <- purrr::map(amlist, ~format_network(.))
 
   # Set up scenarios --------------------------------------------------------
 
@@ -111,21 +111,22 @@ scenario_sim <- function(n.sim, net, prop.ascertain, cap_max_days, R, presymrate
 
   # Run n.sim number of model runs and put them all together in a big data.frame
   res <- purrr::map(netlist, ~ outbreak_model(num.initial.cases = num.initial.cases,
-                                                   net = .,
-                                                   prop.ascertain = prop.ascertain,
-                                                   cap_max_days = cap_max_days,
-                                                   delay_shape = delay_shape,
-                                                   delay_scale = delay_scale,
-                                                   R = R,
-                                                   presymrate = presymrate,
-                                                   prop.asym = prop.asym,
-                                                   quarantine = quarantine,
-                                                   secondary = secondary,
-                                                   tracing = tracing,
-                                                   isolation = isolation,
-                                                   outside = outside,
-                                                   testing = testing,
-                                                   cap_max_tests = cap_max_tests))
+                                              net = .,
+                                              prop.ascertain = prop.ascertain,
+                                              cap_max_days = cap_max_days,
+                                              delay_shape = delay_shape,
+                                              delay_scale = delay_scale,
+                                              R = R,
+                                              presymrate = presymrate,
+                                              prop.asym = prop.asym,
+                                              quarantine = quarantine,
+                                              secondary = secondary,
+                                              tracing = tracing,
+                                              isolation = isolation,
+                                              outside = outside,
+                                              testing = testing,
+                                              cap_max_tests = cap_max_tests,
+                                              test_neg = test_neg))
 
 
   # bind output together and add simulation index

@@ -8,48 +8,61 @@ out <- read_rds("data-raw/outside.rds")
 tes <- read_rds("data-raw/testing.rds")
 
 #Scenarios
-sce %>% filter(week == 9) %>%
+sce %>%
+  unnest(cols = "results") %>%
+  filter(week == 9) %>%
   group_by(intervention) %>%
   summarise(medcases = median(cumcases)/468,
-            Ucases = quantile(cumcases,0.75)/468,
-            Lcases = quantile(cumcases, 0.25)/468)
+            Ucases = quantile(cumcases,0.95)/468,
+            Lcases = quantile(cumcases, 0.05)/468)
 
-sce %>% filter(week == 3) %>%
+sce %>%
+  unnest(cols = "results") %>%
+  filter(week == 3) %>%
   group_by(intervention) %>%
   summarise(medcases = median(weekly_quarantine)/468,
-            Ucases = quantile(weekly_quarantine, 0.75)/468,
-            Lcases = quantile(weekly_quarantine, 0.25)/468)
+            Ucases = quantile(weekly_quarantine, 0.95)/468,
+            Lcases = quantile(weekly_quarantine, 0.05)/468)
 
-sce %>% filter(week == 9) %>%
+sce %>%
+  unnest(cols = "results") %>%
+  filter(week == 9) %>%
   group_by(intervention) %>%
   summarise(medcases = median(weekly_quarantine)/468,
-            Ucases = quantile(weekly_quarantine, 0.75)/468,
-            Lcases = quantile(weekly_quarantine, 0.25)/468)
+            Ucases = quantile(weekly_quarantine, 0.95)/468,
+            Lcases = quantile(weekly_quarantine, 0.05)/468)
 
 
 #testing
-tes %>% filter(week == 9) %>%
-  group_by(intervention,testing) %>%
+tes %>%
+  unnest(cols = "results") %>%
+  filter(week == 9) %>%
+  group_by(intervention,tests) %>%
   summarise(medcases = median(cumcases)/468,
-            Ucases = quantile(cumcases,0.75)/468,
-            Lcases = quantile(cumcases, 0.25)/468)
+            Ucases = quantile(cumcases,0.95)/468,
+            Lcases = quantile(cumcases, 0.05)/468)
 
-tes %>% filter(week == 3) %>%
-  group_by(intervention,testing) %>%
+tes %>% unnest(cols = "results") %>%
+  filter(week == 3) %>%
+  group_by(intervention,tests) %>%
   summarise(medcases = median(weekly_tests)/468,
-            Ucases = quantile(weekly_tests,0.75)/468,
-            Lcases = quantile(weekly_tests, 0.25)/468)
+            Ucases = quantile(weekly_tests,0.95)/468,
+            Lcases = quantile(weekly_tests, 0.05)/468)
 
 
 #distancing
-dis %>% filter(week == 9) %>%
-  group_by(intervention,distancing) %>%
+dis %>%
+unnest(cols = "results") %>%
+  filter(week == 9) %>%
+  group_by(intervention,dist) %>%
   summarise(medcases = median(cumcases)/468,
-            Ucases = quantile(cumcases,0.75)/468,
-            Lcases = quantile(cumcases, 0.25)/468)
+            Ucases = quantile(cumcases,0.95)/468,
+            Lcases = quantile(cumcases, 0.05)/468)
 
-dis %>% filter(week == 3) %>%
-  group_by(intervention,distancing) %>%
+dis %>%
+  unnest(cols = "results") %>%
+  filter(week == 3) %>%
+  group_by(intervention,dist) %>%
   summarise(medcases = median(weekly_quarantine)/468,
-            Ucases = quantile(weekly_quarantine,0.75)/468,
-            Lcases = quantile(weekly_quarantine, 0.25)/468)
+            Ucases = quantile(weekly_quarantine,0.95)/468,
+            Lcases = quantile(weekly_quarantine, 0.05)/468)

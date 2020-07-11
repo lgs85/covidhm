@@ -18,14 +18,16 @@ inf_prob(
 
 \item{inc_samp}{vector of samples from the incubation period distribution}
 
+\item{theta}{proportion of presymptomatic transmission}
+
 \item{R}{scaling factor}
 
-\item{infasym}{vector of weights based on whether inds are asymptomatic}
+\item{contactrate}{vector of network edge weights}
 
-\item{k}{numeric skew parameter for sampling the serial interval from the incubation period}
+\item{infasym}{vector of weights based on whether inds are asymptomatic}
 }
 \value{
-
+vector of probabilities
 }
 \description{
 Samples the serial interval for given incubation period samples - gives an infection prob for a given day

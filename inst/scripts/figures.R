@@ -19,8 +19,6 @@ load("data-raw/am_list.RData")
 
 
 
-
-
 # Figure 1 - network examples ---------------------------------------------
 
 m <- am_list[[1]]
@@ -35,8 +33,7 @@ plot_network2 <- purrr::partial(plot_network,
                                 presymrate = 0.2,
                                 R = 0.8,
                                 outside = 0,
-                                sensitivity = "high",
-                                testing = "none",
+                                testing = FALSE,
                                 s = 333)
 
 pdf("inst/plots/Figure_1.pdf",
@@ -51,9 +48,9 @@ layout(matrix(c(1,1,1,1,1,1,
                 9,9,9,10,10,10,
                 11,11,11,11,11,11,
                 12,12,12,13,13,13),
-             8,6,byrow = TRUE,
-             ),widths = c(1,1,2,2,1,1),
-       heights = c(0.1,1,0.1,1,0.1,1,0.1,1))
+              8,6,byrow = TRUE,
+),widths = c(1,1,2,2,1,1),
+heights = c(0.1,1,0.1,1,0.1,1,0.1,1))
 
 par(mar = c(1,0,0,0))
 
@@ -194,8 +191,7 @@ plot_network2 <- purrr::partial(plot_network,
                                 presymrate = 0.2,
                                 R = 0.8,
                                 outside = 0.001,
-                                sensitivity = "high",
-                                testing = "none",
+                                testing = FALSE,
                                 s = 333)
 
 sce_figb <- function(){
@@ -205,7 +201,7 @@ sce_figb <- function(){
                 quarantine = FALSE,
                 tracing = FALSE,
                 secondary = FALSE)
-  }
+}
 
 sce_figc <- function(){
 
@@ -214,7 +210,7 @@ sce_figc <- function(){
                 quarantine = FALSE,
                 tracing = FALSE,
                 secondary = FALSE)
-  }
+}
 
 sce_figd <- function(){
 
@@ -223,7 +219,7 @@ sce_figd <- function(){
                 quarantine = TRUE,
                 tracing = TRUE,
                 secondary = FALSE)
-  }
+}
 
 sce_fige <- function(){
 
@@ -232,7 +228,7 @@ sce_fige <- function(){
                 quarantine = TRUE,
                 tracing = TRUE,
                 secondary = TRUE)
-  }
+}
 
 
 sce_fig <- plot_grid(sce_figa,
@@ -257,22 +253,27 @@ dev.off()
 # Figure 3 - test and release and distancing ---------------------------------------------
 
 tes_fig <- tes %>%
+  mutate(tests = paste(tests,"tests per day")) %>%
   bind_rows(sce %>%
-              filter(intervention %in% c("Primary tracing",
-                                         "Secondary tracing")) %>%
-              mutate(testing = "No testing")) %>%
-  mutate(testing = factor(testing, levels = c("No testing",
-                                              "5 tests per day",
-                                              "25 tests per day",
-                                              "50 tests per day"))) %>%
-  case_plot(facet = "grid",gridvar = "testing",testing = TRUE)+
+              filter(intervention %in% c("primary_quarantine",
+                                         "secondary_quarantine")) %>%
+              mutate(tests = "No testing")) %>%
+  mutate(tests = factor(tests, levels = c("No testing",
+                                          "5 tests per day",
+                                          "25 tests per day",
+                                          "50 tests per day")),
+         intervention = recode(intervention,
+                               primary_quarantine = "Primary tracing",
+                               secondary_quarantine = "Secondary tracing")) %>%
+  unnest(cols = "results") %>%
+  case_plot(facet = "grid",gridvar = "tests",testing = TRUE)+
   theme(legend.position = "top")
 
 
 
 dis_fig <- dis  %>%
   mutate(dist = paste0(dist*100,"% reduction"),
-    intervention = recode(intervention,
+         intervention = recode(intervention,
                                nothing = "No control",
                                isolation = "Case isolation",
                                primary_quarantine = "Primary tracing",
@@ -292,14 +293,13 @@ dev.off()
 
 
 
-
 # Figure 4 - null networks ------------------------------------------------
 
 net_figa <- net  %>%
   mutate(null = recode(null, latt = "Lattice null",
-                          deg = "Degree null",
-                          edge = "Edge null",
-                          clust = "Cluster null")) %>%
+                       deg = "Degree null",
+                       edge = "Edge null",
+                       clust = "Cluster null")) %>%
   mutate(intervention = recode(intervention,
                                nothing = "No control",
                                isolation = "Case isolation",
@@ -311,9 +311,9 @@ net_figa <- net  %>%
                                           "Primary tracing",
                                           "Secondary tracing")),
          null = factor(null, levels = c("Edge null",
-                                              "Degree null",
-                                              "Lattice null",
-                                              "Cluster null"))) %>%
+                                        "Degree null",
+                                        "Lattice null",
+                                        "Cluster null"))) %>%
   unnest(cols = results) %>%
   case_plot(facet = "grid",gridvar = "null") +
   theme(legend.position = "top")
@@ -329,8 +329,7 @@ plot_network2 <- purrr::partial(plot_network,
                                 presymrate = 0.2,
                                 R = 0.8,
                                 outside = 0.001,
-                                sensitivity = "high",
-                                testing = "none",
+                                testing = FALSE,
                                 isolation = TRUE,
                                 quarantine = TRUE,
                                 tracing = TRUE,
@@ -400,8 +399,7 @@ filtered <- sen %>%
   filter(delay == "Short",
          presymrate == 0.2,
          prop.asym == 0.4,
-         num.initial.cases == 1,
-         sensitivity == "high")
+         num.initial.cases == 1)
 
 ll <- filtered %>%
   group_by(scenarioID) %>%
@@ -468,8 +466,7 @@ filtered <- sen %>%
   filter(delay == "Short",
          presymrate == 0.2,
          R == 0.8,
-         num.initial.cases == 1,
-         sensitivity == "high")
+         num.initial.cases == 1)
 
 ll <- filtered %>%
   group_by(scenarioID) %>%
@@ -515,8 +512,7 @@ filtered <- sen %>%
   filter(delay == "Short",
          prop.asym == 0.4,
          R == 0.8,
-         num.initial.cases == 1,
-         sensitivity == "high")
+         num.initial.cases == 1)
 
 ll <- filtered %>%
   group_by(scenarioID) %>%
@@ -577,8 +573,7 @@ filtered <- sen %>%
   filter(presymrate == 0.2,
          prop.asym == 0.4,
          R == 0.8,
-         num.initial.cases == 1,
-         sensitivity == "high")
+         num.initial.cases == 1)
 
 ll <- filtered %>%
   group_by(scenarioID) %>%
@@ -625,8 +620,7 @@ filtered <- sen %>%
   filter(delay == "Short",
          presymrate == 0.2,
          prop.asym == 0.4,
-         R == 0.8,
-         sensitivity == "high")
+         R == 0.8)
 
 ll <- filtered %>%
   group_by(scenarioID) %>%
@@ -735,8 +729,15 @@ dev.off()
 
 
 dis2_fig <- dis2  %>%
-  case_plot(facet = "grid", gridvar = "distancing")
-
+  mutate(dist = paste0(dist*100,"% reduction"),
+         intervention = recode(intervention,
+                               nothing = "No control",
+                               isolation = "Case isolation",
+                               primary_quarantine = "Primary tracing",
+                               secondary_quarantine = "Secondary tracing")) %>%
+  unnest(cols = "results") %>%
+  case_plot(facet = "grid", gridvar = "dist")+
+  theme(legend.position = "none")
 
 pdf("inst/plots/EDF_8.pdf",
     width =12,

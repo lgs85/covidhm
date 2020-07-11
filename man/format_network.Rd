@@ -7,10 +7,10 @@
 format_network(m)
 }
 \arguments{
-\item{m}{matrix of contacts}
+\item{m}{square matrix of contacts}
 }
 \value{
-
+pairwise list
 }
 \description{
 Matrix to pairwise list without diagonal

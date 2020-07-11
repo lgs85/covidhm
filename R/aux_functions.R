@@ -20,8 +20,8 @@ dist_setup <- function(dist_shape = NULL, dist_scale = NULL) {
 
 #' Matrix to pairwise list without diagonal
 #' @author Lewis Spurgin
-#' @param m matrix of contacts
-#' @return
+#' @param m square matrix of contacts
+#' @return pairwise list
 #' @export
 #' @importFrom tibble as_tibble
 #' @importFrom reshape2 melt
@@ -47,11 +47,12 @@ format_network <- function(m) {
 #'
 #' @param day day of simulation
 #' @param inc_samp vector of samples from the incubation period distribution
-#' @param k numeric skew parameter for sampling the serial interval from the incubation period
+#' @param theta proportion of presymptomatic transmission
 #' @param R scaling factor
+#' @param contactrate vector of network edge weights
 #' @param infasym vector of weights based on whether inds are asymptomatic
 #'
-#' @return
+#' @return vector of probabilities
 #' @export
 #' @importFrom sn dsn
 #' @importFrom purrr rbernoulli
@@ -104,7 +105,7 @@ inf_prob <- function(day = NULL, inc_samp = NULL, theta = NULL, R = NULL, contac
 #' @param am association matrix network
 #' @param returns format for output - either "graph", "matrix" or "edgelist"
 #' @param null type of simulation to perform "edge" = randomised edges, "deg" = degrees retained, "latt" = lattice, "clust" = clustered
-#' @return
+#' @return see returns
 #' @export
 #' @import igraph
 #'
@@ -256,8 +257,8 @@ case_plot <- function(df,testing = FALSE, facet = "wrap", nrow = NULL,
     gather(key = type, value = n_cases,weekly_isolation:cumcases) %>%
     group_by(week,type, intervention, newvar) %>%
     summarise(med_cases = median(n_cases),
-              Q75 = quantile(n_cases,0.75),
-              Q25 = quantile(n_cases,0.25)) %>%
+              Q95 = quantile(n_cases,0.95),
+              Q05 = quantile(n_cases,0.05)) %>%
     ungroup() %>%
     mutate(type = recode(type,cumcases = "Cumulative\ncases",
                          weekly_isolation = "Number\nisolated",
@@ -275,7 +276,7 @@ case_plot <- function(df,testing = FALSE, facet = "wrap", nrow = NULL,
   inner_plot <- function(toplot){
     ggplot(toplot, aes(x = week,y = med_cases,col = type, fill = type))+
       geom_line()+
-      geom_ribbon(aes(ymax = Q75,ymin = Q25),alpha = 0.1,linetype = 0)+
+      geom_ribbon(aes(ymax = Q95,ymin = Q05),alpha = 0.1,linetype = 0)+
       theme_ls()+
       scale_colour_manual(values = c("indianred1",
                                      "darkslategray",
@@ -539,7 +540,7 @@ plot_network <- function(am,
                           delay_scale = NULL, prop.asym = NULL,
                           quarantine = NULL, isolation = NULL,
                           tracing = NULL, secondary = NULL,
-                          outside = NULL, sensitivity = NULL,
+                          outside = NULL,
                           testing = NULL, cap_max_tests = NULL, s = NULL) {
 
   net1 <- format_network(am)
@@ -552,7 +553,7 @@ plot_network <- function(am,
                               delay_scale = delay_scale, prop.asym = prop.asym,
                               quarantine = quarantine, isolation = isolation,
                               tracing = tracing, secondary = secondary,
-                              outside = outside, sensitivity = sensitivity,
+                              outside = outside,
                               testing = testing, cap_max_tests = cap_max_tests,
                               weekly = FALSE, s = s)
   set.seed(s)

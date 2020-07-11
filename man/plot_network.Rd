@@ -20,7 +20,6 @@ plot_network(
   tracing = NULL,
   secondary = NULL,
   outside = NULL,
-  sensitivity = NULL,
   testing = NULL,
   cap_max_tests = NULL,
   s = NULL
@@ -55,7 +54,9 @@ plot_network(
 
 \item{secondary}{logical whether secondary contact tracing is in effect}
 
-\item{testing}{"realistic", "random" or "none"}
+\item{outside}{daily probability of infection from outside the network}
+
+\item{testing}{logical whether testing is in effect}
 
 \item{cap_max_tests}{integer - maximum number of tests}
 
