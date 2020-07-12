@@ -6,7 +6,7 @@ load("data-raw/am_list.RData")
 
 # Set number of replicates ------------------------------------------------
 
-nreps <- 1000
+nreps <- 2
 
 # Set up partial function -------------------------------------------------
 

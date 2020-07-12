@@ -1,7 +1,6 @@
 
 sce <- read_rds("data-raw/scenarios.rds")
 net <- read_rds("data-raw/network.rds")
-sen <- read_rds("data-raw/sensitivity.rds")
 dis <- read_rds("data-raw/distancing.rds")
 dis2 <- read_rds("data-raw/distancing2.rds")
 out <- read_rds("data-raw/outside.rds")

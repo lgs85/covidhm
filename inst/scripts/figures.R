@@ -6,7 +6,8 @@ library(covidhm)
 
 sce <- read_rds("data-raw/scenarios.rds")
 net <- read_rds("data-raw/network.rds")
-sen <- read_rds("data-raw/sensitivity.rds")
+sen <- read_rds("data-raw/sensitivity.rds") %>%
+  unnest(cols = "results")
 dis <- read_rds("data-raw/distancing.rds")
 dis2 <- read_rds("data-raw/distancing2.rds")
 out <- read_rds("data-raw/outside.rds")
@@ -395,32 +396,22 @@ dev.off()
 
 # Figure S3 - R0 ---------------------------------------------
 
-filtered <- sen %>%
+dd <- sen %>%
   filter(delay == "Short",
          presymrate == 0.2,
          prop.asym == 0.4,
-         num.initial.cases == 1)
-
-ll <- filtered %>%
-  group_by(scenarioID) %>%
-  pull(sims[[1]])
-
-names(ll) <- filtered$scenarioID
-
-dd <- bind_rows(ll, .id = "scenarioID") %>%
-  mutate(scenarioID = as.numeric(scenarioID)) %>%
-  left_join(select(filtered,scenarioID,control_effectiveness,R,scenario),by = "scenarioID") %>%
-  mutate(control_effectiveness = recode(control_effectiveness,
+         num.initial.cases == 1) %>%
+  mutate(prop.ascertain = recode(prop.ascertain,
                                         `0.3` = "30% traced",
                                         `0.6` = "60% traced",
                                         `0.9` = "90% traced"),
          scenario = recode(scenario,
                            primary_quarantine = "Primary tracing",
-                           secondary_quarantine = "Secondary quarantine"))
-r_figa <- dd %>%
-  rename(intervention = scenario) %>%
-  filter(R == 0.5) %>%
-  case_plot(facet = "grid",gridvar = "control_effectiveness")
+                           secondary_quarantine = "Secondary quarantine")) %>%
+  rename(intervention = scenario)
+
+  r_figa <- dd %>% filter(R == 0.5) %>%
+  case_plot(facet = "grid",gridvar = "prop.ascertain")
 
 legend <- get_legend(r_figa)
 r_figa <- r_figa +
@@ -429,17 +420,15 @@ r_figa <- r_figa +
   ylim(c(0,350))
 
 r_figb <- dd %>%
-  rename(intervention = scenario) %>%
   filter(R == 0.8) %>%
-  case_plot(facet = "grid",gridvar = "control_effectiveness")+
+  case_plot(facet = "grid",gridvar = "prop.ascertain")+
   theme(legend.position = "none")+
   ggtitle("R = 2.8")+
   ylim(c(0,350))
 
 r_figc <- dd %>%
-  rename(intervention = scenario) %>%
   filter(R == 2) %>%
-  case_plot(facet = "grid",gridvar = "control_effectiveness")+
+  case_plot(facet = "grid",gridvar = "prop.ascertain")+
   theme(legend.position = "none")+
   ggtitle("R = 3.5")+
   ylim(c(0,350))
@@ -461,33 +450,23 @@ dev.off()
 
 
 # Figure S4 - asym, theta ---------------------------------------------
-
-filtered <- sen %>%
+dd <- sen %>%
   filter(delay == "Short",
          presymrate == 0.2,
          R == 0.8,
-         num.initial.cases == 1)
-
-ll <- filtered %>%
-  group_by(scenarioID) %>%
-  pull(sims[[1]])
-
-names(ll) <- filtered$scenarioID
-
-dd <- bind_rows(ll, .id = "scenarioID") %>%
-  mutate(scenarioID = as.numeric(scenarioID)) %>%
-  left_join(select(filtered,scenarioID,control_effectiveness,prop.asym,scenario),by = "scenarioID") %>%
-  mutate(control_effectiveness = recode(control_effectiveness,
-                                        `0.3` = "30% traced",
-                                        `0.6` = "60% traced",
-                                        `0.9` = "90% traced"),
+         num.initial.cases == 1) %>%
+  mutate(prop.ascertain = recode(prop.ascertain,
+                                 `0.3` = "30% traced",
+                                 `0.6` = "60% traced",
+                                 `0.9` = "90% traced"),
          scenario = recode(scenario,
                            primary_quarantine = "Primary tracing",
-                           secondary_quarantine = "Secondary quarantine"))
+                           secondary_quarantine = "Secondary quarantine")) %>%
+  rename(intervention = scenario)
+
 asym_figa <- dd %>%
-  rename(intervention = scenario) %>%
   filter(prop.asym == 0.2) %>%
-  case_plot(facet = "grid",gridvar = "control_effectiveness")
+  case_plot(facet = "grid",gridvar = "prop.ascertain")
 
 legend <- get_legend(asym_figa)
 asym_figa <- asym_figa +
@@ -496,45 +475,34 @@ asym_figa <- asym_figa +
   ylim(c(0,350))
 
 asym_figb <- dd %>%
-  rename(intervention = scenario) %>%
   filter(prop.asym == 0.4) %>%
-  case_plot(facet = "grid",gridvar = "control_effectiveness")+
+  case_plot(facet = "grid",gridvar = "prop.ascertain")+
   theme(legend.position = "none")+
   ggtitle("Proportion asymptomatic = 0.4")+
   ylim(c(0,350))
-
 
 asym_fig <- plot_grid(asym_figa,asym_figb, legend,rel_widths = c(1,1,0.5),nrow = 1)
 
 
 
-filtered <- sen %>%
+#Theta
+dd <- sen %>%
   filter(delay == "Short",
-         prop.asym == 0.4,
          R == 0.8,
-         num.initial.cases == 1)
-
-ll <- filtered %>%
-  group_by(scenarioID) %>%
-  pull(sims[[1]])
-
-names(ll) <- filtered$scenarioID
-
-dd <- bind_rows(ll, .id = "scenarioID") %>%
-  mutate(scenarioID = as.numeric(scenarioID)) %>%
-  left_join(select(filtered,scenarioID,control_effectiveness,presymrate,scenario),by = "scenarioID") %>%
-  mutate(control_effectiveness = recode(control_effectiveness,
-                                        `0.3` = "30% traced",
-                                        `0.6` = "60% traced",
-                                        `0.9` = "90% traced"),
+         prop.asym == 0.4,
+         num.initial.cases == 1) %>%
+  mutate(prop.ascertain = recode(prop.ascertain,
+                                 `0.3` = "30% traced",
+                                 `0.6` = "60% traced",
+                                 `0.9` = "90% traced"),
          scenario = recode(scenario,
                            primary_quarantine = "Primary tracing",
-                           secondary_quarantine = "Secondary quarantine"))
+                           secondary_quarantine = "Secondary quarantine")) %>%
+  rename(intervention = scenario)
 
 theta_figa <- dd %>%
-  rename(intervention = scenario) %>%
   filter(presymrate == 0.2) %>%
-  case_plot(facet = "grid",gridvar = "control_effectiveness")
+  case_plot(facet = "grid",gridvar = "prop.ascertain")
 
 legend <- get_legend(theta_figa)
 theta_figa <- theta_figa +
@@ -543,9 +511,8 @@ theta_figa <- theta_figa +
   ylim(c(0,350))
 
 theta_figb <- dd %>%
-  rename(intervention = scenario) %>%
   filter(presymrate == 0.4) %>%
-  case_plot(facet = "grid",gridvar = "control_effectiveness")+
+  case_plot(facet = "grid",gridvar = "prop.ascertain")+
   theme(legend.position = "none")+
   ggtitle("Theta = 0.4")+
   ylim(c(0,350))
@@ -567,36 +534,23 @@ dev.off()
 
 
 # Figure S5 - delay, starting number -------------------------------------------------------
-
-
-filtered <- sen %>%
-  filter(presymrate == 0.2,
+dd <- sen %>%
+  filter(R == 0.8,
+         presymrate == 0.2,
          prop.asym == 0.4,
-         R == 0.8,
-         num.initial.cases == 1)
-
-ll <- filtered %>%
-  group_by(scenarioID) %>%
-  pull(sims[[1]])
-
-names(ll) <- filtered$scenarioID
-
-dd <- bind_rows(ll, .id = "scenarioID") %>%
-  mutate(scenarioID = as.numeric(scenarioID)) %>%
-  left_join(select(filtered,scenarioID,control_effectiveness,delay,scenario),by = "scenarioID") %>%
-  mutate(control_effectiveness = recode(control_effectiveness,
-                                        `0.3` = "30% traced",
-                                        `0.6` = "60% traced",
-                                        `0.9` = "90% traced"),
+         num.initial.cases == 1) %>%
+  mutate(prop.ascertain = recode(prop.ascertain,
+                                 `0.3` = "30% traced",
+                                 `0.6` = "60% traced",
+                                 `0.9` = "90% traced"),
          scenario = recode(scenario,
                            primary_quarantine = "Primary tracing",
-                           secondary_quarantine = "Secondary quarantine"))
-
+                           secondary_quarantine = "Secondary quarantine")) %>%
+  rename(intervention = scenario)
 
 delay_figa <- dd %>%
-  rename(intervention = scenario) %>%
   filter(delay == "Short") %>%
-  case_plot(facet = "grid",gridvar = "control_effectiveness")+
+  case_plot(facet = "grid",gridvar = "prop.ascertain")+
   ylim(c(0,350))
 
 legend <- get_legend(delay_figa)
@@ -605,9 +559,8 @@ delay_figa <- delay_figa +
   ggtitle("Short delay")
 
 delay_figb <- dd %>%
-  rename(intervention = scenario) %>%
   filter(delay == "Medium") %>%
-  case_plot(facet = "grid",gridvar = "control_effectiveness")+
+  case_plot(facet = "grid",gridvar = "prop.ascertain")+
   theme(legend.position = "none")+
   ggtitle("Medium delay")+
   ylim(c(0,350))
@@ -616,33 +569,24 @@ delay_figb <- dd %>%
 delay_fig <- plot_grid(delay_figa,delay_figb,legend, rel_widths = c(1,1,0.5),nrow = 1)
 
 
-filtered <- sen %>%
+#initial cases
+dd <- sen %>%
   filter(delay == "Short",
          presymrate == 0.2,
          prop.asym == 0.4,
-         R == 0.8)
-
-ll <- filtered %>%
-  group_by(scenarioID) %>%
-  pull(sims[[1]])
-
-names(ll) <- filtered$scenarioID
-
-dd <- bind_rows(ll,.id = "scenarioID") %>%
-  mutate(scenarioID = as.numeric(scenarioID)) %>%
-  left_join(select(filtered,scenarioID,control_effectiveness,num.initial.cases,scenario),by = "scenarioID") %>%
-  mutate(control_effectiveness = recode(control_effectiveness,
-                                        `0.3` = "30% traced",
-                                        `0.6` = "60% traced",
-                                        `0.9` = "90% traced"),
+         R == 0.8) %>%
+  mutate(prop.ascertain = recode(prop.ascertain,
+                                 `0.3` = "30% traced",
+                                 `0.6` = "60% traced",
+                                 `0.9` = "90% traced"),
          scenario = recode(scenario,
                            primary_quarantine = "Primary tracing",
-                           secondary_quarantine = "Secondary quarantine"))
+                           secondary_quarantine = "Secondary quarantine")) %>%
+  rename(intervention = scenario)
 
 initial_case_figa <- dd %>%
-  rename(intervention = scenario) %>%
   filter(num.initial.cases == 1) %>%
-  case_plot(facet = "grid",gridvar = "control_effectiveness")+
+  case_plot(facet = "grid",gridvar = "prop.ascertain")+
   ylim(c(0,350))
 
 legend <- get_legend(initial_case_figa)
@@ -651,9 +595,8 @@ initial_case_figa <- initial_case_figa +
   ggtitle("Initial cases = 1")
 
 initial_case_figb <- dd %>%
-  rename(intervention = scenario) %>%
   filter(num.initial.cases == 5) %>%
-  case_plot(facet = "grid",gridvar = "control_effectiveness")+
+  case_plot(facet = "grid",gridvar = "prop.ascertain")+
   theme(legend.position = "none")+
   ggtitle("Initial cases = 5")+
   ylim(c(0,350))
@@ -676,6 +619,9 @@ dev.off()
 # Figure S6 - outside infection ------------------------------------------
 
 out_fig <- out  %>%
+  unnest(cols = "results") %>%
+  mutate(outside = paste("outside =", outside)) %>%
+  mutate(outside = recode(outside,"outside = 1e-04" = "outside = 0.0001")) %>%
   case_plot(facet = "grid", gridvar = "outside")
 
 
@@ -692,7 +638,12 @@ dev.off()
 # Figure S7 - interventions with dense networks ---------------------------------------
 
 sced_figa <- sce7  %>%
-  mutate(intervention = recode(intervention, Nothing = "No control")) %>%
+  unnest(cols = "results") %>%
+mutate(intervention = recode(intervention,
+                             nothing = "No control",
+                             isolation = "Case isolation",
+                             primary_quarantine = "Primary tracing",
+                             secondary_quarantine = "Secondary tracing")) %>%
   mutate(intervention = factor(intervention,
                                levels = c("No control",
                                           "Case isolation",
@@ -703,7 +654,12 @@ sced_figa <- sce7  %>%
 
 
 sced_figb <- sce16  %>%
-  mutate(intervention = recode(intervention, Nothing = "No control")) %>%
+  unnest(cols = "results") %>%
+  mutate(intervention = recode(intervention,
+                               nothing = "No control",
+                               isolation = "Case isolation",
+                               primary_quarantine = "Primary tracing",
+                               secondary_quarantine = "Secondary tracing")) %>%
   mutate(intervention = factor(intervention,
                                levels = c("No control",
                                           "Case isolation",
