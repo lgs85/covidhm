@@ -56,7 +56,7 @@ heights = c(0.1,1,0.1,1,0.1,1,0.1,1))
 par(mar = c(1,0,0,0))
 
 plot.new()
-text(0.5,0.5,"Starting network",cex = 1.4)
+text(0.5,0.5,"Starting network",cex = 1.8)
 
 plot.new()
 legend("center",
@@ -68,7 +68,7 @@ legend("center",
                   "Infected",
                   "Recovered"),
        bty = "n",
-       cex = 1.4)
+       cex = 1.8)
 
 par(mar = c(1,0,0,0))
 
@@ -88,13 +88,13 @@ legend("left",
                "black"),
        legend = c("Contacts",
                   "Infections",
-                  "Isolated/quarantined"),
+                  "Isolated/\nquarantined"),
        bty = "n",
-       cex = 1.4)
+       cex = 1.8)
 
 
 plot.new()
-text(0.5,0.5,"Day 10",cex = 1.4)
+text(0.5,0.5,"Day 10",cex = 1.8)
 
 par(mar = c(1,0,0,0))
 
@@ -116,7 +116,7 @@ text(0.2,2,"E",cex = 1.6)
 
 
 plot.new()
-text(0.5,0.5,"Day 20",cex = 1.4)
+text(0.5,0.5,"Day 20",cex = 1.8)
 
 par(mar = c(1,0,0,0))
 
@@ -138,7 +138,7 @@ text(0.2,2,"F",cex = 1.6)
 
 
 plot.new()
-text(0.5,0.5,"Day 70",cex = 1.4)
+text(0.5,0.5,"Day 70",cex = 1.8)
 
 par(mar = c(1,0,0,0))
 
@@ -434,13 +434,13 @@ r_figc <- dd %>%
   ylim(c(0,350))
 
 
-r_fig <- plot_grid(r_figa,r_figb, r_figc, legend,rel_widths = c(1,1,1,0.5),nrow = 1)
+r_fig <- plot_grid(plot_grid(r_figa,r_figb, r_figc,nrow = 3), legend, nrow = 1, rel_widths = c(1,0.5))
 
 
 #Write to pdf
 pdf("inst/plots/EDF_3.pdf",
-    width = 16,
-    height = 5)
+    width = 8,
+    height = 16)
 
 r_fig
 
